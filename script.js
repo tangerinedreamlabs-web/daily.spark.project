@@ -1,3 +1,53 @@
+
+const showSubmissionSuccess = (form) => {
+  const section = document.querySelector('#demo');
+  const note = document.querySelector('.form-note');
+  const panel = document.querySelector('.submission-success-panel');
+
+  if (note) {
+    showSubmissionSuccess(form);
+    note.classList.remove('error');
+    note.classList.add('success');
+  }
+
+  if (form) {
+    showSubmissionSuccess(form);
+    form.classList.add('is-submitted');
+  }
+
+  if (panel) {
+    panel.hidden = false;
+  }
+
+  if (section) {
+    section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  if (typeof trackConversion === 'function') {
+    trackConversion('lead_success_state_viewed', { source: 'demo_form' });
+  }
+
+  if (window.gtag) {
+    window.gtag('event', 'generate_lead', {
+      event_category: 'lead',
+      event_label: 'demo_form'
+    });
+  }
+};
+
+const showSubmissionError = () => {
+  const note = document.querySelector('.form-note');
+  if (note) {
+    showSubmissionError();
+    note.classList.remove('success');
+    note.classList.add('error');
+  }
+
+  if (typeof trackConversion === 'function') {
+    trackConversion('lead_submit_error', { source: 'demo_form' });
+  }
+};
+
 import { firebaseConfig, FIRESTORE_COLLECTIONS, ENABLE_FIREBASE_ANALYTICS } from './firebase-config.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js';
 import { getFirestore, addDoc, collection, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js';
@@ -242,7 +292,7 @@ form?.addEventListener('submit', async (event) => {
 
     trackConversion('prospect_form_submit_success', { emailDomain });
     note.textContent = `Thanks, ${name || 'there'}. Your request has been sent.`;
-    form.reset();
+    showSubmissionSuccess(form);
   } catch (error) {
     trackConversion('prospect_form_submit_error', { message: error.message });
     note.textContent = error.message;
@@ -338,3 +388,74 @@ document.addEventListener('keydown', (event) => {
     closeFirstVisitModal();
   }
 });
+
+
+const videoModal = document.querySelector('#video-modal');
+const demoVideoPlayer = document.querySelector('#demo-video-player');
+const videoTriggers = document.querySelectorAll('.video-modal-trigger');
+const videoCloseButtons = document.querySelectorAll('[data-video-close]');
+
+const openVideoModal = (src) => {
+  if (!videoModal || !demoVideoPlayer) return;
+
+  const source = demoVideoPlayer.querySelector('source');
+  if (source && src && source.getAttribute('src') !== src) {
+    source.setAttribute('src', src);
+    demoVideoPlayer.load();
+  }
+
+  videoModal.hidden = false;
+  videoModal.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('modal-open');
+  demoVideoPlayer.play().catch(() => {});
+
+  if (typeof trackConversion === 'function') {
+    trackConversion('demo_video_opened', { source: 'watch_demo_cta' });
+  }
+
+  if (window.gtag) {
+    window.gtag('event', 'video_start', {
+      event_category: 'engagement',
+      event_label: 'DSManager demo'
+    });
+  }
+};
+
+const closeVideoModal = () => {
+  if (!videoModal || !demoVideoPlayer) return;
+
+  demoVideoPlayer.pause();
+  videoModal.hidden = true;
+  videoModal.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('modal-open');
+};
+
+videoTriggers.forEach((trigger) => {
+  trigger.addEventListener('click', (event) => {
+    event.preventDefault();
+    openVideoModal(trigger.dataset.videoSrc || trigger.getAttribute('href'));
+  });
+});
+
+videoCloseButtons.forEach((button) => {
+  button.addEventListener('click', closeVideoModal);
+});
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') closeVideoModal();
+});
+
+if (demoVideoPlayer) {
+  demoVideoPlayer.addEventListener('ended', () => {
+    if (typeof trackConversion === 'function') {
+      trackConversion('demo_video_completed', { source: 'video_modal' });
+    }
+
+    if (window.gtag) {
+      window.gtag('event', 'video_complete', {
+        event_category: 'engagement',
+        event_label: 'DSManager demo'
+      });
+    }
+  });
+}
