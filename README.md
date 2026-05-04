@@ -89,3 +89,33 @@ The demo video is stored locally at:
 - `assets/videos/dsmanager-demo.mp4`
 
 The “Watch the 5-min demo” link opens the local MP4 in an on-page modal video player.
+
+
+## Demo video hosting
+
+The local MP4/modal player has been removed for GitHub Pages reliability.
+
+Upload the demo video to Firebase Storage at a path such as:
+
+`website/videos/dsmanager-demo.mp4`
+
+Then replace this placeholder URL in `index.html`:
+
+`https://firebasestorage.googleapis.com/v0/b/YOUR-PROJECT-ID.appspot.com/o/website%2Fvideos%2Fdsmanager-demo.mp4?alt=media`
+
+with the real Firebase Storage download URL for the file.
+
+
+## Contact form
+
+Firebase/Firestore lead capture and conversion tracking have been removed.
+
+The contact form now submits to Formspree:
+
+`https://formspree.io/f/YOUR_FORM_ID`
+
+Before deploying, create a Formspree form and replace `YOUR_FORM_ID` in `index.html` with your real Formspree form ID.
+
+The site uses JavaScript to submit the form asynchronously and show:
+
+“Thanks, we’ll be in contact soon!”
