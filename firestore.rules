@@ -1,0 +1,49 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Public website lead capture.
+    // The site only needs create access. Read/update/delete should happen from your admin app only.
+    match /prospects/{prospectId} {
+      allow create: if
+        request.resource.data.keys().hasOnly([
+          'name', 'email', 'emailDomain', 'message', 'source', 'status', 'tags',
+          'pageUrl', 'pagePath', 'referrer', 'visitorId', 'sessionId',
+          'deviceType', 'isIOS', 'isAndroid', 'userAgent', 'language', 'utm',
+          'createdAtClient', 'createdAt', 'updatedAt'
+        ]) &&
+        request.resource.data.name is string &&
+        request.resource.data.name.size() >= 1 &&
+        request.resource.data.name.size() <= 120 &&
+        request.resource.data.email is string &&
+        request.resource.data.email.size() >= 5 &&
+        request.resource.data.email.size() <= 180 &&
+        request.resource.data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$') &&
+        request.resource.data.message is string &&
+        request.resource.data.message.size() <= 2500 &&
+        request.resource.data.status == 'new' &&
+        request.resource.data.createdAt == request.time &&
+        request.resource.data.updatedAt == request.time;
+
+      allow read, update, delete: if false;
+    }
+
+    // Public conversion events. Use this for aggregate funnel tracking.
+    match /conversions/{conversionId} {
+      allow create: if
+        request.resource.data.keys().hasOnly([
+          'eventName', 'category', 'label', 'href', 'app', 'linkType', 'title',
+          'emailDomain', 'message', 'location', 'visitorId', 'sessionId',
+          'pageUrl', 'pagePath', 'pageHash', 'referrer', 'deviceType',
+          'userAgent', 'language', 'viewport', 'utm', 'createdAtClient', 'createdAt'
+        ]) &&
+        request.resource.data.eventName is string &&
+        request.resource.data.eventName.size() >= 1 &&
+        request.resource.data.eventName.size() <= 80 &&
+        request.resource.data.category == 'conversion' &&
+        request.resource.data.createdAt == request.time;
+
+      allow read, update, delete: if false;
+    }
+  }
+}
