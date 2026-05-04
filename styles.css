@@ -555,10 +555,11 @@ textarea:focus {
 }
 
 .qr {
-  width: min(148px, 42vw);
+  width: min(210px, 70vw);
   border-radius: 18px;
   background: var(--white);
-  box-shadow: 0 10px 24px rgba(22, 14, 42, 0.10);
+  margin: 0 auto;
+  display: block;
 }
 
 .store-link {
