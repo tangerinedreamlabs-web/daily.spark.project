@@ -83,17 +83,8 @@ This version submits the bottom contact/demo form directly to Cloud Firestore.
 A static GitHub Pages site writes from the browser, so the Firebase config is public by design. Security must be enforced by Firestore Rules, App Check, or a Cloud Function relay if you want stronger spam protection.
 
 
-## Video demo
-
-The demo video is stored locally at:
-- `assets/videos/dsmanager-demo.mp4`
-
-The “Watch the 5-min demo” link opens the local MP4 in an on-page modal video player.
-
-
 ## Demo video hosting
 
-The local MP4/modal player has been removed for GitHub Pages reliability.
 
 Upload the demo video to Firebase Storage at a path such as:
 
@@ -108,9 +99,8 @@ with the real Firebase Storage download URL for the file.
 
 ## Contact form
 
-Firebase/Firestore lead capture and conversion tracking have been removed.
 
-The contact form now submits to Formspree:
+The contact form submits to Formspree:
 
 `https://formspree.io/f/YOUR_FORM_ID`
 
